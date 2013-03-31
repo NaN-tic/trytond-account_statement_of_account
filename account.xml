@@ -1,0 +1,42 @@
+<tryton>
+<data>
+    <record id="move_statement_of_account_tree" model="ir.ui.view">
+        <field name="model">account.move.line</field>
+        <field name="type">tree</field>
+        <field name="priority">30</field>
+        <field name="name">move_statement_of_account_tree</field>
+    </record>
+    <record model="ir.action.act_window" id="act_statement_of_account_tree">
+        <field name="name">Statement of Account</field>
+        <field name="res_model">account.move.line</field>
+    </record>
+    <record model="ir.action.act_window.view"
+    	id="act_statement_of_account_tree_view1">
+        <field name="sequence" eval="10"/>
+        <field name="view" ref="move_statement_of_account_tree"/>
+        <field name="act_window" ref="act_statement_of_account_tree"/>
+    </record>
+    <record model="ir.action.act_window.view"
+    	id="act_account_type_template_tree_view2">
+        <field name="sequence" eval="20"/>
+        <field name="view" ref="account.move_view_form"/>
+        <field name="act_window" ref="act_statement_of_account_tree"/>
+    </record>
+
+    <record model="ir.ui.view" id="account_statement_of_account_start_form">
+        <field name="model">account.statement.of.account.start</field>
+        <field name="type">form</field>
+        <field name="name">statement_of_account_start</field>
+    </record>
+    <record model="ir.action.wizard" id="act_statement_of_account">
+        <field name="name">Open Statement of Account</field>
+        <field name="wiz_name">account.statement.of.account</field>
+    </record>
+    <menuitem
+        action="act_statement_of_account"
+        id="menu_statement_of_account"
+        parent="account.menu_entries"
+        sequence="100"
+        />
+</data>
+</tryton>
