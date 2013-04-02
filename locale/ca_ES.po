@@ -1,0 +1,47 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:account.move.line,balance:"
+msgid "Balance"
+msgstr "Saldo"
+
+msgctxt "field:account.statement.of.account.start,account:"
+msgid "Account"
+msgstr "Compte"
+
+msgctxt "field:account.statement.of.account.start,fiscalyear:"
+msgid "Fiscal Year"
+msgstr "Exercici fiscal"
+
+msgctxt "field:account.statement.of.account.start,id:"
+msgid "ID"
+msgstr "ID"
+
+msgctxt "field:account.statement.of.account.start,party:"
+msgid "Party"
+msgstr "Tercer"
+
+msgctxt "model:account.statement.of.account.start,name:"
+msgid "Statement of Account"
+msgstr "Extracte de compte"
+
+msgctxt "model:ir.action,name:act_statement_of_account"
+msgid "Open Statement of Account"
+msgstr "Obre extracte de compte"
+
+msgctxt "model:ir.action,name:act_statement_of_account_tree"
+msgid "Statement of Account"
+msgstr "Extracte de compte"
+
+msgctxt "model:ir.ui.menu,name:menu_statement_of_account"
+msgid "Open Statement of Account"
+msgstr "Obre extracte de compte"
+
+msgctxt "wizard_button:account.statement.of.account,start,end:"
+msgid "Cancel"
+msgstr "Cancel·la"
+
+msgctxt "wizard_button:account.statement.of.account,start,open_:"
+msgid "Open"
+msgstr "Obre"
