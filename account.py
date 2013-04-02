@@ -143,7 +143,7 @@ class StatementOfAccountStart(ModelView):
         required=True)
     account = fields.Many2One('account.account', 'Account',
         domain=[('type','!=','view')], required=True)
-    party = fields.Many2One('party.party', 'Partner')
+    party = fields.Many2One('party.party', 'Party')
 
     @staticmethod
     def default_fiscalyear():
