@@ -1,5 +1,6 @@
-# The COPYRIGHT file at the top level of this repository contains the full
-# copyright notices and license terms.
+#This file is part account_statement_of_account module for Tryton.
+#The COPYRIGHT file at the top level of this repository contains 
+#the full copyright notices and license terms.
 from decimal import Decimal
 from trytond.tools import reduce_ids
 from trytond.model import ModelView, ModelSQL, fields
@@ -142,7 +143,7 @@ class StatementOfAccountStart(ModelView):
     fiscalyear = fields.Many2One('account.fiscalyear', 'Fiscal Year',
         required=True)
     account = fields.Many2One('account.account', 'Account',
-        domain=[('type','!=','view')], required=True)
+        domain=[('type', '!=', 'view')], required=True)
     party = fields.Many2One('party.party', 'Party')
 
     @staticmethod
