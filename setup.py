@@ -1,15 +1,13 @@
 #!/usr/bin/env python
-#This file is part of Tryton.  The COPYRIGHT file at the top level of
-#this repository contains the full copyright notices and license terms.
+# -*- encoding: utf-8 -*-
+#This file is part account_statement_of_account module for Tryton.
+#The COPYRIGHT file at the top level of this repository contains 
+#the full copyright notices and license terms.
 
 from setuptools import setup
 import re
 import os
 import ConfigParser
-
-
-def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 config = ConfigParser.ConfigParser()
 config.readfp(open('tryton.cfg'))
@@ -30,23 +28,22 @@ for dep in info.get('depends', []):
 requires.append('trytond >= %s.%s, < %s.%s' %
         (major_version, minor_version, major_version, minor_version + 1))
 
-setup(name='nan_account_statement_of_account',
+setup(name='trytonspain_account_statement_of_account',
     version=info.get('version', '0.0.1'),
-    description='Tryton to open a statement of accounts',
-    long_description=read('README'),
-    author='Tryton',
-    url='http://www.tryton.org/',
-    download_url="http://downloads.tryton.org/" + \
-        info.get('version', '0.0.1').rsplit('.', 1)[0] + '/',
-    package_dir={'trytond.modules.nantic': '.'},
+    description='Account Statement of Account',
+    author='NaN·tic',
+    author_email='info@NaN-tic.com',
+    url='http://www.nan-tic.com',
+    download_url="https://bitbucket.org/trytonspain/trytond-account_statement_of_account",
+    package_dir={'trytond.modules.account_statement_of_account': '.'},
     packages=[
         'trytond.modules.account_statement_of_account',
         'trytond.modules.account_statement_of_account.tests',
-        ],
+    ],
     package_data={
         'trytond.modules.account_statement_of_account': info.get('xml', []) \
-            + ['tryton.cfg', 'locale/*.po', 'view/*.xml'],
-        },
+            + ['tryton.cfg', 'locale/*.po'],
+    },
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Plugins',
@@ -54,22 +51,15 @@ setup(name='nan_account_statement_of_account',
         'Intended Audience :: Developers',
         'Intended Audience :: Financial and Insurance Industry',
         'Intended Audience :: Legal Industry',
-        'Intended Audience :: Manufacturing',
         'License :: OSI Approved :: GNU General Public License (GPL)',
-        'Natural Language :: Bulgarian',
-        'Natural Language :: Catalan',
-        'Natural Language :: Czech',
-        'Natural Language :: Dutch',
         'Natural Language :: English',
-        'Natural Language :: French',
-        'Natural Language :: German',
-        'Natural Language :: Russian',
+        'Natural Language :: Catalan',
         'Natural Language :: Spanish',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Topic :: Office/Business',
-        ],
+    ],
     license='GPL-3',
     install_requires=requires,
     zip_safe=False,
@@ -79,4 +69,4 @@ setup(name='nan_account_statement_of_account',
     """,
     test_suite='tests',
     test_loader='trytond.test_loader:Loader',
-    )
+)
