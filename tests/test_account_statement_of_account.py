@@ -54,64 +54,6 @@ class AccountStatementOfAccountTestCase(unittest.TestCase):
         '''
         test_depends()
 
-    def test0010account_chart(self):
-        'Test creation of minimal chart of accounts'
-        with Transaction().start(DB_NAME, USER,
-                context=CONTEXT) as transaction:
-            account_template, = self.account_template.search([
-                    ('parent', '=', None),
-                    ])
-
-            company, = self.company.search([('rec_name', '=', 'B2CK')])
-            self.user.write([self.user(USER)], {
-                    'main_company': company.id,
-                    'company': company.id,
-                    })
-            CONTEXT.update(self.user.get_preferences(context_only=True))
-
-            session_id, _, _ = self.account_create_chart.create()
-            create_chart = self.account_create_chart(session_id)
-            create_chart.account.account_template = account_template
-            create_chart.account.company = company
-            create_chart.transition_create_account()
-            receivable, = self.account.search([
-                    ('kind', '=', 'receivable'),
-                    ('company', '=', company.id),
-                    ])
-            payable, = self.account.search([
-                    ('kind', '=', 'payable'),
-                    ('company', '=', company.id),
-                    ])
-            create_chart.properties.company = company
-            create_chart.properties.account_receivable = receivable
-            create_chart.properties.account_payable = payable
-            create_chart.transition_create_properties()
-            transaction.cursor.commit()
-
-    def test0020fiscalyear(self):
-        '''
-        Test fiscalyear.
-        '''
-        with Transaction().start(DB_NAME, USER,
-                context=CONTEXT) as transaction:
-            today = datetime.date.today()
-            company, = self.company.search([('rec_name', '=', 'B2CK')])
-            sequence, = self.sequence.create([{
-                        'name': '%s' % today.year,
-                        'code': 'account.move',
-                        'company': company.id,
-                        }])
-            fiscalyear, = self.fiscalyear.create([{
-                        'name': '%s' % today.year,
-                        'start_date': today.replace(month=1, day=1),
-                        'end_date': today.replace(month=12, day=31),
-                        'company': company.id,
-                        'post_move_sequence': sequence.id,
-                        }])
-            self.fiscalyear.create_period([fiscalyear])
-            self.assertEqual(len(fiscalyear.periods), 12)
-            transaction.cursor.commit()
-
     def test0030account_debit_credit(self):
         '''
         Test account debit/credit.
@@ -246,6 +188,10 @@ def suite():
     from trytond.modules.company.tests import test_company
     for test in test_company.suite():
         if test not in suite:
+            suite.addTest(test)
+    from trytond.modules.account.tests import test_account
+    for test in test_account.suite():
+        if test not in suite and not isinstance(test, doctest.DocTestCase):
             suite.addTest(test)
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(
         AccountStatementOfAccountTestCase))
