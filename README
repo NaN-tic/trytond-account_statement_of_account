@@ -1,7 +1,7 @@
-trytond_nantic
-==============
+trytond_account_statement_of_account
+====================================
 
-The nantic module of the Tryton application platform.
+Account Statement of account module of the Tryton application platform.
 
 Installing
 ----------
