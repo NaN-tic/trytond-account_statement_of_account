@@ -46,7 +46,7 @@ class Line(ModelSQL, ModelView):
         for line in lines:
             id = line.id
             account_id = line.account.id
-            party_id = line.party and line.party.id
+            party = line.party.id if line.party else None
             date = line.move.date
             number = line.move.number
             debit = line.debit or Decimal('0.0')
@@ -69,6 +69,10 @@ class Line(ModelSQL, ModelView):
             # 'search()' function below, so remember to modify that if you want
             # to change this calulation.
 
+            party_sql = 'aml.party IS NULL'
+            if party:
+                partysql = 'aml.party = %s' % party
+
             cursor.execute("""
                 SELECT
                     SUM(debit-credit)
@@ -78,14 +82,14 @@ class Line(ModelSQL, ModelView):
                 WHERE """ + where_fiscalyear + """
                     aml.move = am.id
                     AND aml.account = %s
-                    AND (NOT %s OR aml.party = %s)
+                    AND (NOT %s OR """ + party_sql + """)
                     AND (
                         am.date < %s
                         OR (am.date = %s AND am.number < %s)
                         OR (am.date = %s AND am.number = %s
                             AND aml.id < %s)
                     )
-                """, (account_id, check_party, party_id, date, date, number,
+                """, (account_id, check_party, date, date, number,
                     date, number, id))
             balance = cursor.fetchone()[0] or Decimal('0.0')
             # SQLite uses float for SUM
