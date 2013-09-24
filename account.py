@@ -68,7 +68,6 @@ class Line(ModelSQL, ModelView):
             # Of course, this filtering criteria must be the one used by the
             # 'search()' function below, so remember to modify that if you want
             # to change this calulation.
-
             party_sql = 'aml.party IS NULL'
             if party:
                 partysql = 'aml.party = %s' % party
@@ -100,6 +99,23 @@ class Line(ModelSQL, ModelView):
             res[id] = balance
         return res
 
+    @staticmethod
+    def order_move(tables):
+        if not Transaction().context.get('statement_of_account'):
+            return cls.move.convert_order('move', tables, cls)
+
+        table, _ = tables[None]
+        Move = Pool().get('account.move')
+        date = Move._fields['date']
+        number = Move._fields['number']
+        move = Move.__table__()
+        move_tables = {
+            None: (move, move.id == table.move),
+            }
+        tables['move'] = move_tables
+        return (date.convert_order('date', move_tables, Move) +
+            number.convert_order('number', move_tables, Move) + [table.id])
+
     @classmethod
     def search(cls, args, offset=0, limit=None, order=None, count=False,
             query_string=False):
@@ -109,36 +125,14 @@ class Line(ModelSQL, ModelView):
         special one is used so it ensures consistency between balance field
         value and account.move.line order.
         """
-        lines = super(Line, cls).search(args, offset, limit, order,
-            count, query_string)
-
-        cursor = Transaction().cursor
-
-        if Transaction().context.get('statement_of_account') and lines:
+        if order is None:
+            order = []
+        order = list(order)
+        if Transaction().context.get('statement_of_account'):
             # If it's a statement_of_account, ignore order given
-            red_sql, red_ids = reduce_ids('aml.id', [x.id for x in lines])
-
-            # This sorting criteria must be the one used by the 'balance'
-            # functional field above, so remember to modify that if you
-            # want to change the order.
-            cursor.execute("""
-                SELECT
-                    aml.id
-                FROM
-                    account_move_line aml,
-                    account_move am
-                WHERE
-                    aml.move = am.id AND
-                """ + red_sql + """
-                ORDER BY
-                    am.date,
-                    am.number,
-                    aml.id
-                """, red_ids)
-            result = cursor.fetchall()
-            ids = [x[0] for x in result]
-            lines = cls.browse(ids)
-        return lines
+            order = [('move', 'ASC')]
+        return super(Line, cls).search(args, offset, limit, order, count,
+            query_string)
 
 
 class StatementOfAccountStart(ModelView):
