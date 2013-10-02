@@ -2,7 +2,6 @@
 #The COPYRIGHT file at the top level of this repository contains 
 #the full copyright notices and license terms.
 from decimal import Decimal
-from trytond.tools import reduce_ids
 from trytond.model import ModelView, ModelSQL, fields
 from trytond.transaction import Transaction
 from trytond.pool import Pool
@@ -70,7 +69,7 @@ class Line(ModelSQL, ModelView):
             # to change this calulation.
             party_sql = 'aml.party IS NULL'
             if party:
-                partysql = 'aml.party = %s' % party
+                party_sql = 'aml.party = %s' % party
 
             cursor.execute("""
                 SELECT

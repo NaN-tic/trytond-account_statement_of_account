@@ -11,7 +11,6 @@ if os.path.isdir(DIR):
 
 import unittest
 import doctest
-import datetime
 from decimal import Decimal
 import trytond.tests.test_tryton
 from trytond.tests.test_tryton import test_view, test_depends
@@ -22,7 +21,7 @@ from trytond.transaction import Transaction
 
 class AccountStatementOfAccountTestCase(unittest.TestCase):
     '''
-    Test AccountStatementOfAccount module.
+    Test Account Statement Of Account module.
     '''
 
     def setUp(self):
