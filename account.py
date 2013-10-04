@@ -117,7 +117,7 @@ class Line(ModelSQL, ModelView):
 
     @classmethod
     def search(cls, args, offset=0, limit=None, order=None, count=False,
-            query_string=False):
+            query=False):
         """
         Override default search function so that if it's being called from the
         statement of accounts tree view, the given order is ignored and a
@@ -131,7 +131,7 @@ class Line(ModelSQL, ModelView):
             # If it's a statement_of_account, ignore order given
             order = [('move', 'ASC')]
         return super(Line, cls).search(args, offset, limit, order, count,
-            query_string)
+            query)
 
 
 class StatementOfAccountStart(ModelView):
