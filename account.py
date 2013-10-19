@@ -1,6 +1,8 @@
 #This file is part account_statement_of_account module for Tryton.
-#The COPYRIGHT file at the top level of this repository contains 
+#The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
+from sql.aggregate import Sum
+from sql import Column
 from decimal import Decimal
 from trytond.model import ModelView, ModelSQL, fields
 from trytond.transaction import Transaction
@@ -23,23 +25,18 @@ class Line(ModelSQL, ModelView):
     def get_balance(cls, lines, name):
         if not lines:
             return {}
+        pool = Pool()
+        Move = pool.get('account.move')
+        Line = pool.get('account.move.line')
+        Period = pool.get('account.period')
+        FiscalYear = pool.get('account.fiscalyear')
+
         ids = [x.id for x in lines]
         res = {}.fromkeys(ids, Decimal('0.0'))
         fiscalyear_id = Transaction().context.get(
             'statement_of_account_fiscalyear_id')
         default_check_party = Transaction().context.get(
             'statement_of_account_check_party')
-
-        from_fiscalyear = ''
-        where_fiscalyear = ''
-        if fiscalyear_id:
-            from_fiscalyear = '''
-                LEFT JOIN account_period ap ON (ap.id=am.period)
-                LEFT JOIN account_fiscalyear af ON (af.id=ap.fiscalyear)
-                '''
-            where_fiscalyear = '''
-                ap.fiscalyear = %d AND
-                ''' % fiscalyear_id
 
         cursor = Transaction().cursor
         for line in lines:
@@ -60,36 +57,44 @@ class Line(ModelSQL, ModelView):
             # thus move.number will be '/' It can also happen that users made
             # some mistakes and move.number may be recalculated at the end of
             # the current period or year. So here we consider users want this
-            # sorted by date. In the same date, then then move.number is
+            # sorted by date. In the same date, then move.number is
             # considered and finally if they have the same value, they're sorted
             # by account_move_line.id just to ensure balance is not overlapped.
 
             # Of course, this filtering criteria must be the one used by the
-            # 'search()' function below, so remember to modify that if you want
-            # to change this calulation.
-            party_sql = 'aml.party IS NULL'
-            if party:
-                party_sql = 'aml.party = %s' % party
+            # 'order_move()' function below, so remember to modify that if you
+            # want to change this calulation.
 
-            cursor.execute("""
-                SELECT
-                    SUM(debit-credit)
-                FROM
-                    account_move am""" + from_fiscalyear + """,
-                    account_move_line aml
-                WHERE """ + where_fiscalyear + """
-                    aml.move = am.id
-                    AND aml.account = %s
-                    AND (NOT %s OR """ + party_sql + """)
-                    AND (
-                        am.date < %s
-                        OR (am.date = %s AND am.number < %s)
-                        OR (am.date = %s AND am.number = %s
-                            AND aml.id < %s)
-                    )
-                """, (account_id, check_party, date, date, number,
-                    date, number, id))
-            balance = cursor.fetchone()[0] or Decimal('0.0')
+            move = Move.__table__()
+            line = Line.__table__()
+            columns = [Sum(line.debit - line.credit)]
+            table = move
+            where = line.account == account_id
+
+            if fiscalyear_id:
+                period = Period.__table__()
+                table = table.join(period, 'LEFT',
+                    condition=move.period == period.id)
+                fiscalyear = FiscalYear.__table__()
+                table = table.join(fiscalyear, 'LEFT',
+                    condition=fiscalyear.id == period.fiscalyear)
+                where &= period.fiscalyear == fiscalyear_id
+
+            table = table.join(line, condition=move.id == line.move)
+
+            if check_party:
+                where &= line.party == party
+
+            where &= ((move.date < date)
+                | ((move.date == date) & (move.number < number))
+                | ((move.date == date) & (move.number == number)
+                    & (move.id < id)))
+
+            cursor.execute(*table.select(*columns, where=where))
+            record = cursor.fetchone()
+            balance = Decimal('0.0')
+            if record and record[0]:
+                balance = record[0]
             # SQLite uses float for SUM
             if not isinstance(balance, Decimal):
                 balance = Decimal(balance)
@@ -100,11 +105,37 @@ class Line(ModelSQL, ModelView):
 
     @staticmethod
     def order_move(tables):
+        pool = Pool()
+        Move = pool.get('account.move')
+        Line = pool.get('account.move.line')
+
         if not Transaction().context.get('statement_of_account'):
-            return cls.move.convert_order('move', tables, cls)
+            # TODO: This code is almost copy & pasted from
+            # fields.Many2One.convert_order function because
+            # if that function is called we get an infinite recursion
+            # error, due to the check at the very beginning of that
+            # function which will call this one again. We should
+            # probably split that core function in two.
+            field = Line._fields['move']
+            Target = field.get_target()
+            oname = 'id'
+            if Target._rec_name in Target._fields:
+                oname = Target._rec_name
+            if Target._order_name in Target._fields:
+                oname = Target._order_name
+
+            ofield = Target._fields[oname]
+            table, _ = tables[None]
+            target_tables = tables.get('move')
+            if target_tables is None:
+                target = Target.__table__()
+                target_tables = {
+                    None: (target, target.id == Column(table, 'move')),
+                    }
+                tables['move'] = target_tables
+            return ofield.convert_order(oname, target_tables, Target)
 
         table, _ = tables[None]
-        Move = Pool().get('account.move')
         date = Move._fields['date']
         number = Move._fields['number']
         move = Move.__table__()
