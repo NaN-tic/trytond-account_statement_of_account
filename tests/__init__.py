@@ -2,3 +2,5 @@
 # copyright notices and license terms.
 
 from .test_account_statement_of_account import suite
+
+__all__ = ['suite']
