@@ -90,6 +90,8 @@ class Line(ModelSQL, ModelView):
                 | ((move.date == date) & (move.number == number)
                     & (move.id < id)))
 
+            # remove current line from query
+            where &= line.id != id
             cursor.execute(*table.select(*columns, where=where))
             record = cursor.fetchone()
             balance = Decimal('0.0')
