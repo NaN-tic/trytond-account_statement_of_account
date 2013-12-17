@@ -201,9 +201,7 @@ class StatementOfAccount(Wizard):
         title = ''
         if self.start.account.code:
             title += '%s: ' % self.start.account.code
-        title += name[:10]
-        if len(name) > 10:
-            title += '...'
+        title += name
         action['name'] = title
 
         domain = [('account', '=', self.start.account.id)]
