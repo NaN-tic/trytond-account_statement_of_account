@@ -31,6 +31,7 @@
     <record model="ir.action.wizard" id="act_statement_of_account">
         <field name="name">Open Statement of Account</field>
         <field name="wiz_name">account.statement.of.account</field>
+        <field name="model">party.party,-1</field>
     </record>
     <menuitem
         action="act_statement_of_account"
@@ -38,5 +39,32 @@
         parent="account.menu_entries"
         sequence="100"
         />
+    <record model="ir.action.wizard" id="act_statement_of_account_receivable">
+        <field name="name">Receivable Statement of Account</field>
+        <field name="wiz_name">account.statement.of.account.receivable</field>
+    </record>
+    <record model="ir.action.keyword" id="statement_of_account_receivable_keyword">
+        <field name="keyword">form_action</field>
+        <field name="model">party.party,-1</field>
+        <field name="action" ref="act_statement_of_account_receivable"/>
+    </record>
+    <record model="ir.action.wizard" id="act_statement_of_account_payable">
+        <field name="name">Payable Statement of Account</field>
+        <field name="wiz_name">account.statement.of.account.payable</field>
+    </record>
+    <record model="ir.action.keyword" id="statement_of_account_payable_keyword">
+        <field name="keyword">form_action</field>
+        <field name="model">party.party,-1</field>
+        <field name="action" ref="act_statement_of_account_payable"/>
+    </record>
+    <record model="ir.action.wizard" id="act_statement_of_account_account">
+        <field name="name">Statement of Account</field>
+        <field name="wiz_name">account.statement.of.account</field>
+    </record>
+    <record model="ir.action.keyword" id="statement_of_account_account_keyword">
+        <field name="keyword">form_action</field>
+        <field name="model">account.account,-1</field>
+        <field name="action" ref="act_statement_of_account_account"/>
+    </record>
 </data>
 </tryton>

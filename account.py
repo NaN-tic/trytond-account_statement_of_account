@@ -10,7 +10,8 @@ from trytond.pool import Pool
 from trytond.wizard import Wizard, StateView, StateAction, Button
 from trytond.pyson import PYSONEncoder
 
-__all__ = ['Line', 'StatementOfAccountStart', 'StatementOfAccount']
+__all__ = ['Line', 'StatementOfAccountStart', 'StatementOfAccount',
+    'ReceivableStatementOfAccount', 'PayableStatementOfAccount']
 
 
 class Line(ModelSQL, ModelView):
@@ -182,6 +183,20 @@ class StatementOfAccountStart(ModelView):
         return FiscalYear.find(Transaction().context.get('company'),
             exception=False)
 
+    @staticmethod
+    def default_account():
+        model = Transaction().context.get('active_model')
+        if model == 'account.account':
+            return Transaction().context.get('active_id')
+        return None
+
+    @staticmethod
+    def default_party():
+        model = Transaction().context.get('active_model')
+        if model == 'party.party':
+            return Transaction().context.get('active_id')
+        return None
+
 
 class StatementOfAccount(Wizard):
     'Statement of Account'
@@ -216,3 +231,29 @@ class StatementOfAccount(Wizard):
                 'statement_of_account_fiscalyear_id': self.start.fiscalyear.id,
                 })
         return action, {}
+
+
+class ReceivableStatementOfAccount(StatementOfAccount):
+    'Receivable Statement Of Account'
+    __name__ = 'account.statement.of.account.receivable'
+
+    def default_start(self, fields):
+        Party = Pool().get('party.party')
+        party = Party(Transaction().context.get('active_id'))
+        return {
+            'account': (party.account_receivable.id if party.account_receivable
+                else None),
+            }
+
+
+class PayableStatementOfAccount(StatementOfAccount):
+    'Payable Statement Of Account'
+    __name__ = 'account.statement.of.account.payable'
+
+    def default_start(self, fields):
+        Party = Pool().get('party.party')
+        party = Party(Transaction().context.get('active_id'))
+        return {
+            'account': (party.account_payable.id if party.account_payable
+                else None),
+            }

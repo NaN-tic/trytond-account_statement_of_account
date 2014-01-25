@@ -12,4 +12,6 @@ def register():
         module='account_statement_of_account', type_='model')
     Pool.register(
         StatementOfAccount,
+        ReceivableStatementOfAccount,
+        PayableStatementOfAccount,
         module='account_statement_of_account', type_='wizard')
