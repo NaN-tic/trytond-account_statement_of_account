@@ -31,7 +31,6 @@
     <record model="ir.action.wizard" id="act_statement_of_account">
         <field name="name">Open Statement of Account</field>
         <field name="wiz_name">account.statement.of.account</field>
-        <field name="model">party.party,-1</field>
     </record>
     <menuitem
         action="act_statement_of_account"
