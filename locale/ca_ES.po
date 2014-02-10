@@ -30,6 +30,18 @@ msgctxt "model:ir.action,name:act_statement_of_account"
 msgid "Open Statement of Account"
 msgstr "Obre extracte de compte"
 
+msgctxt "model:ir.action,name:act_statement_of_account_account"
+msgid "Statement of Account"
+msgstr "Extracte de compte"
+
+msgctxt "model:ir.action,name:act_statement_of_account_payable"
+msgid "Payable Statement of Account"
+msgstr "Extracte de compte a pagar"
+
+msgctxt "model:ir.action,name:act_statement_of_account_receivable"
+msgid "Receivable Statement of Account"
+msgstr "Extracte de compte a cobrar"
+
 msgctxt "model:ir.action,name:act_statement_of_account_tree"
 msgid "Statement of Account"
 msgstr "Extracte de compte"
@@ -38,10 +50,42 @@ msgctxt "model:ir.ui.menu,name:menu_statement_of_account"
 msgid "Open Statement of Account"
 msgstr "Obre extracte de compte"
 
+msgctxt "view:account.move.line:"
+msgid "Statement of Account"
+msgstr "Extracte de compte"
+
+msgctxt "view:account.move.line:"
+msgid "Total credit"
+msgstr "Total haver"
+
+msgctxt "view:account.move.line:"
+msgid "Total debit"
+msgstr "Total deure"
+
+msgctxt "view:account.statement.of.account.start:"
+msgid "Statement of Account"
+msgstr "Extracte de compte"
+
 msgctxt "wizard_button:account.statement.of.account,start,end:"
 msgid "Cancel"
 msgstr "Cancel·la"
 
 msgctxt "wizard_button:account.statement.of.account,start,open_:"
+msgid "Open"
+msgstr "Obre"
+
+msgctxt "wizard_button:account.statement.of.account.payable,start,end:"
+msgid "Cancel"
+msgstr "Cancel·la"
+
+msgctxt "wizard_button:account.statement.of.account.payable,start,open_:"
+msgid "Open"
+msgstr "Obre"
+
+msgctxt "wizard_button:account.statement.of.account.receivable,start,end:"
+msgid "Cancel"
+msgstr "Cancel·la"
+
+msgctxt "wizard_button:account.statement.of.account.receivable,start,open_:"
 msgid "Open"
 msgstr "Obre"
