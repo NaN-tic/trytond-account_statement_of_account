@@ -205,7 +205,7 @@ class StatementOfAccount(Wizard):
         'account_statement_of_account.account_statement_of_account_start_form',
         [
             Button('Cancel', 'end', 'tryton-cancel'),
-            Button('Open', 'open_', 'tryton-ok'),
+            Button('Open', 'open_', 'tryton-ok', default=True),
             ])
     open_ = StateAction(
         'account_statement_of_account.act_statement_of_account_tree')
