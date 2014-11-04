@@ -1,28 +1,18 @@
 #!/usr/bin/env python
-#This file is part of Tryton.  The COPYRIGHT file at the top level of
-#this repository contains the full copyright notices and license terms.
-
-import sys
-import os
-DIR = os.path.abspath(os.path.normpath(os.path.join(__file__,
-    '..', '..', '..', '..', '..', 'trytond')))
-if os.path.isdir(DIR):
-    sys.path.insert(0, os.path.dirname(DIR))
-
+# This file is part of Tryton.  The COPYRIGHT file at the top level of
+# this repository contains the full copyright notices and license terms.
 import unittest
 import doctest
 from decimal import Decimal
 import trytond.tests.test_tryton
 from trytond.tests.test_tryton import test_view, test_depends
+from trytond.tests.test_tryton import doctest_setup, doctest_teardown
 from trytond.tests.test_tryton import POOL, DB_NAME, USER, CONTEXT
-from trytond.backend.sqlite.database import Database as SQLiteDatabase
 from trytond.transaction import Transaction
 
 
 class AccountStatementOfAccountTestCase(unittest.TestCase):
-    '''
-    Test Account Statement Of Account module.
-    '''
+    'Test Account Statement Of Account module'
 
     def setUp(self):
         trytond.tests.test_tryton.install_module(
@@ -42,21 +32,15 @@ class AccountStatementOfAccountTestCase(unittest.TestCase):
         self.party = POOL.get('party.party')
 
     def test0005views(self):
-        '''
-        Test views.
-        '''
+        'Test views'
         test_view('account_statement_of_account')
 
     def test0006depends(self):
-        '''
-        Test depends.
-        '''
+        'Test depends'
         test_depends()
 
     def test0030account_debit_credit(self):
-        '''
-        Test account debit/credit.
-        '''
+        'Test account debit/credit'
         with Transaction().start(DB_NAME, USER,
                 context=CONTEXT) as transaction:
 
@@ -169,18 +153,6 @@ class AccountStatementOfAccountTestCase(unittest.TestCase):
 
             transaction.cursor.rollback()
 
-def doctest_dropdb(test):
-    '''
-    Remove sqlite memory database
-    '''
-    database = SQLiteDatabase().connect()
-    cursor = database.cursor(autocommit=True)
-    try:
-        database.drop(cursor, ':memory:')
-        cursor.commit()
-    finally:
-        cursor.close()
-
 
 def suite():
     suite = trytond.tests.test_tryton.suite()
@@ -196,9 +168,6 @@ def suite():
         AccountStatementOfAccountTestCase))
     suite.addTests(doctest.DocFileSuite(
             'scenario_statement_of_account.rst',
-            setUp=doctest_dropdb, tearDown=doctest_dropdb, encoding='utf-8',
+            setUp=doctest_setup, tearDown=doctest_teardown, encoding='utf-8',
             optionflags=doctest.REPORT_ONLY_FIRST_FAILURE))
     return suite
-
-if __name__ == '__main__':
-    unittest.TextTestRunner(verbosity=2).run(suite())
