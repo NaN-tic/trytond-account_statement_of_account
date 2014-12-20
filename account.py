@@ -162,8 +162,12 @@ class Line(ModelSQL, ModelView):
             order = []
         order = list(order)
         if Transaction().context.get('statement_of_account'):
+            descending = True
+            for x in order:
+                if x[0] == 'date' and x[1].upper() == 'ASC':
+                    descending = False
             # If it's a statement_of_account, ignore order given
-            order = [('move', 'ASC')]
+            order = [('move', 'DESC' if descending else 'ASC')]
         return super(Line, cls).search(args, offset, limit, order, count,
             query)
 
