@@ -72,15 +72,6 @@ class Line(ModelSQL, ModelView):
             table = move
             where = line.account == account_id
 
-            if fiscalyear_id:
-                period = Period.__table__()
-                table = table.join(period, 'LEFT',
-                    condition=move.period == period.id)
-                fiscalyear = FiscalYear.__table__()
-                table = table.join(fiscalyear, 'LEFT',
-                    condition=fiscalyear.id == period.fiscalyear)
-                where &= period.fiscalyear == fiscalyear_id
-
             table = table.join(line, condition=move.id == line.move)
 
             if check_party:
