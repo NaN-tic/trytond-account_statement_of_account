@@ -146,7 +146,6 @@ Create moves::
     >>> line = move.lines.new()
     >>> line.account = cash
     >>> line.debit = Decimal(42)
-    >>> line.party = customer
     >>> line = move.lines.new()
     >>> line.account = receivable
     >>> line.credit = Decimal(42)
@@ -171,7 +170,6 @@ Create moves::
     >>> line = move.lines.new()
     >>> line.account = cash
     >>> line.debit = Decimal(65)
-    >>> line.party = customer
     >>> line = move.lines.new()
     >>> line.account = receivable
     >>> line.credit = Decimal(65)

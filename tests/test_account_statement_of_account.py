@@ -41,9 +41,7 @@ class AccountStatementOfAccountTestCase(unittest.TestCase):
 
     def test0030account_debit_credit(self):
         'Test account debit/credit'
-        with Transaction().start(DB_NAME, USER,
-                context=CONTEXT) as transaction:
-
+        with Transaction().start(DB_NAME, USER, context=CONTEXT):
             party1, party2 = self.party.create([{
                         'name': 'Customer 1',
                         }, {
@@ -116,6 +114,20 @@ class AccountStatementOfAccountTestCase(unittest.TestCase):
                 lines = self.move_line.search([
                         ('account', '=', receivable.id),
                         ])
+            self.assertEqual(lines[0].balance, Decimal(40))
+            self.assertEqual(lines[0].party, party1)
+            self.assertEqual(lines[1].balance, Decimal(20))
+            self.assertEqual(lines[1].party, party2)
+            self.assertEqual(lines[2].balance, Decimal(10))
+            self.assertEqual(lines[2].party, party1)
+
+            # Override order
+            with Transaction().set_context(statement_of_account=True,
+                    statement_of_account_fiscalyear_id=fiscalyear.id):
+                lines = self.move_line.search([
+                        ('account', '=', receivable.id),
+                        ],
+                    order=[('date', 'ASC')])
             self.assertEqual(lines[0].balance, Decimal(10))
             self.assertEqual(lines[0].party, party1)
             self.assertEqual(lines[1].balance, Decimal(20))
@@ -130,11 +142,11 @@ class AccountStatementOfAccountTestCase(unittest.TestCase):
                 lines = self.move_line.search([
                         ('account', '=', receivable.id),
                         ])
-            self.assertEqual(lines[0].balance, Decimal(10))
+            self.assertEqual(lines[0].balance, Decimal(60))
             self.assertEqual(lines[0].party, party1)
             self.assertEqual(lines[1].balance, Decimal(30))
             self.assertEqual(lines[1].party, party2)
-            self.assertEqual(lines[2].balance, Decimal(60))
+            self.assertEqual(lines[2].balance, Decimal(10))
             self.assertEqual(lines[2].party, party1)
 
             # check_party == True
@@ -144,14 +156,12 @@ class AccountStatementOfAccountTestCase(unittest.TestCase):
                 lines = self.move_line.search([
                         ('account', '=', receivable.id),
                         ])
-            self.assertEqual(lines[0].balance, Decimal(10))
+            self.assertEqual(lines[0].balance, Decimal(40))
             self.assertEqual(lines[0].party, party1)
             self.assertEqual(lines[1].balance, Decimal(20))
             self.assertEqual(lines[1].party, party2)
-            self.assertEqual(lines[2].balance, Decimal(40))
+            self.assertEqual(lines[2].balance, Decimal(10))
             self.assertEqual(lines[2].party, party1)
-
-            transaction.cursor.rollback()
 
 
 def suite():
