@@ -8,7 +8,7 @@ from trytond.model import ModelView, ModelSQL, fields
 from trytond.transaction import Transaction
 from trytond.pool import Pool
 from trytond.wizard import Wizard, StateView, StateAction, Button
-from trytond.pyson import PYSONEncoder
+from trytond.pyson import If, Bool, Eval, PYSONEncoder
 
 __all__ = ['Line', 'StatementOfAccountStart', 'StatementOfAccount',
     'ReceivableStatementOfAccount', 'PayableStatementOfAccount']
@@ -17,6 +17,11 @@ __all__ = ['Line', 'StatementOfAccountStart', 'StatementOfAccount',
 class Line(ModelSQL, ModelView):
     __name__ = 'account.move.line'
     balance = fields.Function(fields.Numeric('Balance'), 'get_balance')
+
+    @classmethod
+    def view_attributes(cls):
+        return [('/tree', 'colors',
+                If(Bool(Eval('reconciliation')), 'black', 'red'))]
 
     @classmethod
     def _check_party_account_kind(cls, account_kind):
