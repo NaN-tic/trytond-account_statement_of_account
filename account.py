@@ -34,8 +34,6 @@ class Line(ModelSQL, ModelView):
         pool = Pool()
         Move = pool.get('account.move')
         Line = pool.get('account.move.line')
-        Period = pool.get('account.period')
-        FiscalYear = pool.get('account.fiscalyear')
 
         ids = [x.id for x in lines]
         res = {}.fromkeys(ids, Decimal('0.0'))
