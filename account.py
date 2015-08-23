@@ -19,11 +19,6 @@ class Line(ModelSQL, ModelView):
     balance = fields.Function(fields.Numeric('Balance'), 'get_balance')
 
     @classmethod
-    def view_attributes(cls):
-        return [('/tree', 'colors',
-                If(Bool(Eval('reconciliation')), 'black', 'red'))]
-
-    @classmethod
     def _check_party_account_kind(cls, account_kind):
         return account_kind in ('payable', 'receivable')
 
