@@ -8,7 +8,7 @@ from trytond.model import ModelView, ModelSQL, fields
 from trytond.transaction import Transaction
 from trytond.pool import Pool
 from trytond.wizard import Wizard, StateView, StateAction, Button
-from trytond.pyson import If, Bool, Eval, PYSONEncoder
+from trytond.pyson import PYSONEncoder
 
 __all__ = ['Line', 'StatementOfAccountStart', 'StatementOfAccount',
     'ReceivableStatementOfAccount', 'PayableStatementOfAccount']
@@ -32,8 +32,6 @@ class Line(ModelSQL, ModelView):
 
         ids = [x.id for x in lines]
         res = {}.fromkeys(ids, Decimal('0.0'))
-        fiscalyear_id = Transaction().context.get(
-            'statement_of_account_fiscalyear_id')
         default_check_party = Transaction().context.get(
             'statement_of_account_check_party')
 
