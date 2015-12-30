@@ -154,7 +154,10 @@ class Line(ModelSQL, ModelView):
                 if x[0] == 'date' and x[1].upper() == 'ASC':
                     descending = False
             # If it's a statement_of_account, ignore order given
-            order = [('move', 'DESC' if descending else 'ASC')]
+            order = [
+                ('move.date', 'DESC' if descending else 'ASC'),
+                ('move.number', 'DESC' if descending else 'ASC')
+                ]
         return super(Line, cls).search(args, offset, limit, order, count,
             query)
 
