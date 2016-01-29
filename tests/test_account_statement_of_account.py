@@ -155,8 +155,13 @@ class AccountStatementOfAccountTestCase(ModuleTestCase):
             self.assertEqual(lines[2].balance, Decimal(10))
             self.assertEqual(lines[2].party, party1)
 
+
 def suite():
     suite = trytond.tests.test_tryton.suite()
+    from trytond.modules.account.tests import test_account
+    for test in test_account.suite():
+        if test not in suite and not isinstance(test, doctest.DocTestCase):
+            suite.addTest(test)
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(
         AccountStatementOfAccountTestCase))
     suite.addTests(doctest.DocFileSuite(

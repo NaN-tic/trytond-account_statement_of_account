@@ -93,49 +93,6 @@ class Line(ModelSQL, ModelView):
             res[id] = balance
         return res
 
-    @staticmethod
-    def order_move(tables):
-        pool = Pool()
-        Move = pool.get('account.move')
-        Line = pool.get('account.move.line')
-
-        if not Transaction().context.get('statement_of_account'):
-            # TODO: This code is almost copy & pasted from
-            # fields.Many2One.convert_order function because
-            # if that function is called we get an infinite recursion
-            # error, due to the check at the very beginning of that
-            # function which will call this one again. We should
-            # probably split that core function in two.
-            field = Line._fields['move']
-            Target = field.get_target()
-            oname = 'id'
-            if Target._rec_name in Target._fields:
-                oname = Target._rec_name
-            if Target._order_name in Target._fields:
-                oname = Target._order_name
-
-            ofield = Target._fields[oname]
-            table, _ = tables[None]
-            target_tables = tables.get('move')
-            if target_tables is None:
-                target = Target.__table__()
-                target_tables = {
-                    None: (target, target.id == Column(table, 'move')),
-                    }
-                tables['move'] = target_tables
-            return ofield.convert_order(oname, target_tables, Target)
-
-        table, _ = tables[None]
-        date = Move._fields['date']
-        number = Move._fields['number']
-        move = Move.__table__()
-        move_tables = {
-            None: (move, move.id == table.move),
-            }
-        tables['move'] = move_tables
-        return (date.convert_order('date', move_tables, Move) +
-            number.convert_order('number', move_tables, Move) + [table.id])
-
     @classmethod
     def search(cls, args, offset=0, limit=None, order=None, count=False,
             query=False):
