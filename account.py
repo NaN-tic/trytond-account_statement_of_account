@@ -35,7 +35,7 @@ class Line(ModelSQL, ModelView):
         default_check_party = Transaction().context.get(
             'statement_of_account_check_party')
 
-        cursor = Transaction().cursor
+        cursor = Transaction().connection.cursor()
         for line in lines:
             id = line.id
             account_id = line.account.id
