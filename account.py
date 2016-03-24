@@ -125,7 +125,7 @@ class StatementOfAccountStart(ModelView):
     fiscalyear = fields.Many2One('account.fiscalyear', 'Fiscal Year',
         required=True)
     account = fields.Many2One('account.account', 'Account',
-        domain=[('type', '!=', 'view')], required=True)
+        domain=[('kind', '!=', 'view')], required=True)
     party = fields.Many2One('party.party', 'Party')
 
     @staticmethod
