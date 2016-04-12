@@ -4,51 +4,50 @@
 import unittest
 import doctest
 from decimal import Decimal
+from trytond.pool import Pool
 import trytond.tests.test_tryton
-from trytond.tests.test_tryton import ModuleTestCase
+from trytond.tests.test_tryton import ModuleTestCase, with_transaction
 from trytond.tests.test_tryton import doctest_setup, doctest_teardown
 from trytond.tests.test_tryton import doctest_checker
-from trytond.tests.test_tryton import POOL, DB_NAME, USER, CONTEXT
 from trytond.transaction import Transaction
+
+from trytond.modules.company.tests import create_company, set_company
+from trytond.modules.account.tests import create_chart, get_fiscalyear
 
 
 class AccountStatementOfAccountTestCase(ModuleTestCase):
     'Test Account Statement Of Account module'
     module = 'account_statement_of_account'
 
-    def setUp(self):
-        super(AccountStatementOfAccountTestCase, self).setUp()
-        self.account_template = POOL.get('account.account.template')
-        self.account = POOL.get('account.account')
-        self.account_create_chart = POOL.get(
-            'account.create_chart', type='wizard')
-        self.company = POOL.get('company.company')
-        self.user = POOL.get('res.user')
-        self.fiscalyear = POOL.get('account.fiscalyear')
-        self.sequence = POOL.get('ir.sequence')
-        self.move = POOL.get('account.move')
-        self.move_line = POOL.get('account.move.line')
-        self.journal = POOL.get('account.journal')
-        self.account_type = POOL.get('account.account.type')
-        self.party = POOL.get('party.party')
-
-    def test0030account_debit_credit(self):
+    @with_transaction()
+    def test_account_debit_credit(self):
         'Test account debit/credit'
-        with Transaction().start(DB_NAME, USER, context=CONTEXT):
-            party1, party2 = self.party.create([{
+        pool = Pool()
+        Party = pool.get('party.party')
+        FiscalYear = pool.get('account.fiscalyear')
+        Journal = pool.get('account.journal')
+        Account = pool.get('account.account')
+        Move = pool.get('account.move')
+        MoveLine = pool.get('account.move.line')
+        company = create_company()
+        with set_company(company):
+            create_chart(company)
+            fiscalyear = get_fiscalyear(company)
+            fiscalyear.save()
+            FiscalYear.create_period([fiscalyear])
+            period = fiscalyear.periods[0]
+            party1, party2 = Party.create([{
                         'name': 'Customer 1',
                         }, {
                         'name': 'Customer 2',
                         }])
-            fiscalyear, = self.fiscalyear.search([])
-            period = fiscalyear.periods[0]
-            journal_revenue, = self.journal.search([
+            journal_revenue, = Journal.search([
                     ('code', '=', 'REV'),
                     ])
-            revenue, = self.account.search([
+            revenue, = Account.search([
                     ('kind', '=', 'revenue'),
                     ])
-            receivable, = self.account.search([
+            receivable, = Account.search([
                     ('kind', '=', 'receivable'),
                     ])
             # Create some moves
@@ -99,12 +98,12 @@ class AccountStatementOfAccountTestCase(ModuleTestCase):
                         ],
                     },
                 ]
-            self.move.create(vlist)
+            Move.create(vlist)
 
             # Default value for check_party
             with Transaction().set_context(statement_of_account=True,
                     statement_of_account_fiscalyear_id=fiscalyear.id):
-                lines = self.move_line.search([
+                lines = MoveLine.search([
                         ('account', '=', receivable.id),
                         ])
             self.assertEqual(lines[0].balance, Decimal(40))
@@ -117,7 +116,7 @@ class AccountStatementOfAccountTestCase(ModuleTestCase):
             # Override order
             with Transaction().set_context(statement_of_account=True,
                     statement_of_account_fiscalyear_id=fiscalyear.id):
-                lines = self.move_line.search([
+                lines = MoveLine.search([
                         ('account', '=', receivable.id),
                         ],
                     order=[('date', 'ASC')])
@@ -132,7 +131,7 @@ class AccountStatementOfAccountTestCase(ModuleTestCase):
             with Transaction().set_context(statement_of_account=True,
                     statement_of_account_check_party=False,
                     statement_of_account_fiscalyear_id=fiscalyear.id):
-                lines = self.move_line.search([
+                lines = MoveLine.search([
                         ('account', '=', receivable.id),
                         ])
             self.assertEqual(lines[0].balance, Decimal(60))
@@ -146,7 +145,7 @@ class AccountStatementOfAccountTestCase(ModuleTestCase):
             with Transaction().set_context(statement_of_account=True,
                     statement_of_account_check_party=True,
                     statement_of_account_fiscalyear_id=fiscalyear.id):
-                lines = self.move_line.search([
+                lines = MoveLine.search([
                         ('account', '=', receivable.id),
                         ])
             self.assertEqual(lines[0].balance, Decimal(40))
@@ -159,10 +158,6 @@ class AccountStatementOfAccountTestCase(ModuleTestCase):
 
 def suite():
     suite = trytond.tests.test_tryton.suite()
-    from trytond.modules.account.tests import test_account
-    for test in test_account.suite():
-        if test not in suite and not isinstance(test, doctest.DocTestCase):
-            suite.addTest(test)
     suite.addTests(unittest.TestLoader().loadTestsFromTestCase(
         AccountStatementOfAccountTestCase))
     suite.addTests(doctest.DocFileSuite(
