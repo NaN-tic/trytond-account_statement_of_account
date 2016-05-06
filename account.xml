@@ -19,7 +19,7 @@
     <record model="ir.action.act_window.view"
         id="act_account_type_template_tree_view2">
         <field name="sequence" eval="20"/>
-        <field name="view" ref="account.move_view_form"/>
+        <field name="view" ref="account.move_line_view_form"/>
         <field name="act_window" ref="act_statement_of_account_tree"/>
     </record>
 
