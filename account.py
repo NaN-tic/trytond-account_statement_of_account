@@ -23,6 +23,38 @@ class Line(ModelSQL, ModelView):
         return account_kind in ('payable', 'receivable')
 
     @classmethod
+    def create(cls, vlist):
+        if Transaction().context.get('statement_of_account'):
+            with Transaction().set_context(statement_of_account=False):
+                res = super(Line, cls).create(vlist)
+        else:
+            # Do not change context and thus, the cache if statement_of_account
+            # was not set.
+            res = super(Line, cls).create(vlist)
+        return res
+
+    @classmethod
+    def write(cls, records, values, *args):
+        if Transaction().context.get('statement_of_account'):
+            with Transaction().set_context(statement_of_account=False):
+                super(Line, cls).write(records, values, *args)
+        else:
+            # Do not change context and thus, the cache if statement_of_account
+            # was not set.
+            super(Line, cls).write(records, values, *args)
+
+    @classmethod
+    def read(cls, ids, fields_names=None):
+        if Transaction().context.get('statement_of_account'):
+            with Transaction().set_context(statement_of_account=False):
+                res = super(Line, cls).read(ids, fields_names)
+        else:
+            # Do not change context and thus, the cache if statement_of_account
+            # was not set.
+            res = super(Line, cls).read(ids, fields_names)
+        return res
+
+    @classmethod
     def get_balance(cls, lines, name):
         if not lines:
             return {}
@@ -149,16 +181,21 @@ class Line(ModelSQL, ModelView):
         special one is used so it ensures consistency between balance field
         value and account.move.line order.
         """
-        if order is None:
-            order = []
-        order = list(order)
         if Transaction().context.get('statement_of_account'):
+            if order is None:
+                order = []
+            order = list(order)
             descending = True
             for x in order:
                 if x[0] == 'date' and x[1].upper() == 'ASC':
                     descending = False
             # If it's a statement_of_account, ignore order given
             order = [('move', 'DESC' if descending else 'ASC')]
+            with Transaction().set_context(statement_of_account=False):
+                # Remove statement_of_account from context so that it is not
+                # used when calculating Rule's domain_get()
+                return super(Line, cls).search(args, offset, limit, order,
+                    count, query)
         return super(Line, cls).search(args, offset, limit, order, count,
             query)
 
