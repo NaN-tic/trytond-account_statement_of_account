@@ -135,7 +135,7 @@ class Line(ModelSQL, ModelView):
         Move = pool.get('account.move')
         Line = pool.get('account.move.line')
 
-        if not Transaction().context.get('statement_of_account'):
+        if not Transaction().context.get('search_statement_of_account'):
             # TODO: This code is almost copy & pasted from
             # fields.Many2One.convert_order function because
             # if that function is called we get an infinite recursion
@@ -191,7 +191,8 @@ class Line(ModelSQL, ModelView):
                     descending = False
             # If it's a statement_of_account, ignore order given
             order = [('move', 'DESC' if descending else 'ASC')]
-            with Transaction().set_context(statement_of_account=False):
+            with Transaction().set_context(statement_of_account=False,
+                    search_statement_of_account=True):
                 # Remove statement_of_account from context so that it is not
                 # used when calculating Rule's domain_get()
                 return super(Line, cls).search(args, offset, limit, order,
