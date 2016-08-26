@@ -7,7 +7,7 @@ from decimal import Decimal
 from trytond.pool import Pool
 import trytond.tests.test_tryton
 from trytond.tests.test_tryton import ModuleTestCase, with_transaction
-from trytond.tests.test_tryton import doctest_setup, doctest_teardown
+from trytond.tests.test_tryton import doctest_teardown
 from trytond.tests.test_tryton import doctest_checker
 from trytond.transaction import Transaction
 
@@ -162,7 +162,7 @@ def suite():
         AccountStatementOfAccountTestCase))
     suite.addTests(doctest.DocFileSuite(
             'scenario_statement_of_account.rst',
-            setUp=doctest_setup, tearDown=doctest_teardown, encoding='utf-8',
+            tearDown=doctest_teardown, encoding='utf-8',
             checker=doctest_checker,
             optionflags=doctest.REPORT_ONLY_FIRST_FAILURE))
     return suite
