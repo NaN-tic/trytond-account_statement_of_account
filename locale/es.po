@@ -16,7 +16,7 @@ msgstr "Ejercicio fiscal"
 
 msgctxt "field:account.statement.of.account.start,id:"
 msgid "ID"
-msgstr "Identificador"
+msgstr "ID"
 
 msgctxt "field:account.statement.of.account.start,party:"
 msgid "Party"
