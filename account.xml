@@ -36,6 +36,7 @@
         action="act_statement_of_account"
         id="menu_statement_of_account"
         parent="account.menu_entries"
+        icon="tryton-list"
         sequence="100"
         />
     <record model="ir.action.wizard" id="act_statement_of_account_receivable">
