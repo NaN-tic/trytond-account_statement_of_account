@@ -166,9 +166,9 @@ class StatementOfAccount(Wizard):
             or self.start.account.name)
         title = ''
         if self.start.account.code:
-            title += '%s: ' % self.start.account.code
+            title += '%s - ' % self.start.account.code
         title += name
-        action['name'] = title
+        action['name'] += ': %s' % title
 
         domain = [('account', '=', self.start.account.id)]
         domain += [('period.fiscalyear', '=', self.start.fiscalyear.id)]
