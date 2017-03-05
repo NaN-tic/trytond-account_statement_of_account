@@ -2,7 +2,6 @@
 #The COPYRIGHT file at the top level of this repository contains
 #the full copyright notices and license terms.
 from sql.aggregate import Sum
-from sql import Column
 from decimal import Decimal
 from trytond.model import ModelView, ModelSQL, fields
 from trytond.transaction import Transaction
@@ -76,10 +75,8 @@ class Line(ModelSQL, ModelView):
             where &= ((move.date < date)
                 | ((move.date == date) & (move.number < number))
                 | ((move.date == date) & (move.number == number)
-                    & (move.id < id)))
+                    & (line.id < id)))
 
-            # remove current line from query
-            where &= line.id != id
             cursor.execute(*table.select(*columns, where=where))
             record = cursor.fetchone()
             balance = Decimal('0.0')
