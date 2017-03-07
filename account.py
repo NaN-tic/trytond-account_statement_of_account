@@ -110,7 +110,8 @@ class Line(ModelSQL, ModelView):
             # If it's a statement_of_account, ignore order given
             order = [
                 ('move.date', 'DESC' if descending else 'ASC'),
-                ('move.number', 'DESC' if descending else 'ASC')
+                ('move.number', 'DESC' if descending else 'ASC'),
+                ('id', 'DESC' if descending else 'ASC'),
                 ]
         return super(Line, cls).search(args, offset, limit, order, count,
             query)
