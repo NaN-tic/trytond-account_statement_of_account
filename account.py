@@ -1,6 +1,6 @@
-#This file is part account_statement_of_account module for Tryton.
-#The COPYRIGHT file at the top level of this repository contains
-#the full copyright notices and license terms.
+# This file is part account_statement_of_account module for Tryton.
+# The COPYRIGHT file at the top level of this repository contains
+# the full copyright notices and license terms.
 from sql.aggregate import Sum
 from decimal import Decimal
 from trytond.model import ModelView, ModelSQL, fields
@@ -86,8 +86,9 @@ class Line(ModelSQL, ModelView):
             # some mistakes and move.number may be recalculated at the end of
             # the current period or year. So here we consider users want this
             # sorted by date. In the same date, then move.number is
-            # considered and finally if they have the same value, they're sorted
-            # by account_move_line.id just to ensure balance is not overlapped.
+            # considered and finally if they have the same value, they're
+            # sorted by account_move_line.id just to ensure balance is not
+            # overlapped.
 
             # Of course, this filtering criteria must be the one used by the
             # 'order_move()' function below, so remember to modify that if you
